@@ -18,6 +18,9 @@ on:
       minutes:
         description: "何分間監視するか（手動テスト用。既定10分）"
         required: false
+      test_notify:
+        description: "LINEにテスト通知を送るなら yes"
+        required: false
 
 permissions:
   contents: write
@@ -31,11 +34,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 300
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt
+
+      - name: LINE送信テスト（test_notify に yes を入れた時だけ）
+        if: github.event.inputs.test_notify == 'yes'
+        env:
+          LINE_CHANNEL_TOKEN: ${{ secrets.LINE_CHANNEL_TOKEN }}
+        run: python -c "import notify; notify.send('✅ 通知テスト：クラウドからのLINE送信は正常です')"
 
       - name: 常駐監視（2分おき）
         env:
