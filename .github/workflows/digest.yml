@@ -1,0 +1,32 @@
+name: weekly-digest
+
+on:
+  schedule:
+    - cron: "0 12 * * 0"     # 毎週日曜 21:00 JST（=日曜 12:00 UTC）に翌週分を送信
+  workflow_dispatch:          # 手動実行。範囲を指定すればその期間を送れる（テスト用）
+    inputs:
+      from:
+        description: "開始日 YYYY-MM-DD（空欄なら翌週の月曜）"
+        required: false
+      to:
+        description: "終了日 YYYY-MM-DD（空欄なら日曜）"
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: 週間ダイジェスト送信
+        run: python weekly_digest.py --send
+        env:
+          LINE_CHANNEL_TOKEN: ${{ secrets.LINE_CHANNEL_TOKEN }}
+          DIGEST_FROM: ${{ github.event.inputs.from }}
+          DIGEST_TO: ${{ github.event.inputs.to }}

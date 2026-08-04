@@ -1,0 +1,58 @@
+name: taxi-watch
+
+# GitHubのcronは起動が数十分ずれることがあるため、「5分おきに起動を頼む」のはやめ、
+# 夕方に一度起動して、その中で2分おきに見張り続ける方式にする。
+# 起動が多少遅れても、動き出した後の検知は2分以内で安定する。
+#
+# 前半 = UTC 07:00 (JST 16:00) 起動、JST 20:10 まで監視
+# 後半 = UTC 11:00 (JST 20:00) 起動、JST 24:00 まで監視
+# 予備 = UTC 13:00 (JST 22:00) 起動。前半/後半が動かなかった時の保険
+#        （すでに動いていれば concurrency で待たされ、24時以降は自動で即終了する）
+on:
+  schedule:
+    - cron: "0 7 * * *"
+    - cron: "0 11 * * *"
+    - cron: "0 13 * * *"
+  workflow_dispatch:
+    inputs:
+      minutes:
+        description: "何分間監視するか（手動テスト用。既定10分）"
+        required: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: taxi-watch          # 二重起動を防ぐ（後から来たものは待機）
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+
+      - name: 常駐監視（2分おき）
+        env:
+          LINE_CHANNEL_TOKEN: ${{ secrets.LINE_CHANNEL_TOKEN }}
+          EVENTS_PRIVATE: ${{ secrets.EVENTS_PRIVATE }}
+          POLL_SECONDS: "120"
+          # 前半の起動(UTC 07:00)は20:10まで。それ以外は24時まで。
+          LOOP_END: ${{ github.event.schedule == '0 7 * * *' && '20:10' || '00:00' }}
+          MAX_MINUTES: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.minutes || '10') || '290' }}
+        run: python watch_loop.py
+
+      - name: 重複防止の記録を保存
+        if: always()
+        run: |
+          git config user.name "taxi-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add state.json || true
+          git commit -m "update state [skip ci]" || echo "変更なし"
+          git pull --rebase -q origin main || true
+          git push || echo "push skip"
