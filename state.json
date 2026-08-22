@@ -1,6 +1,47 @@
 {
   "date": "2026-08-22",
-  "flights": {},
+  "flights": {
+    "54120894": {
+      "delay": 0,
+      "cancelled": true
+    },
+    "54120896": {
+      "delay": 0,
+      "cancelled": true
+    },
+    "54121202": {
+      "delay": 146,
+      "cancelled": false
+    },
+    "54121211": {
+      "delay": 119,
+      "cancelled": false
+    },
+    "54121219": {
+      "delay": 85,
+      "cancelled": false
+    },
+    "54119951": {
+      "delay": 225,
+      "cancelled": false
+    },
+    "54120890": {
+      "delay": 221,
+      "cancelled": false
+    },
+    "54121223": {
+      "delay": 55,
+      "cancelled": false
+    },
+    "54121216": {
+      "delay": 137,
+      "cancelled": false
+    },
+    "54120892": {
+      "delay": 209,
+      "cancelled": false
+    }
+  },
   "trains": {},
   "events": {},
   "sent_advance": {}
