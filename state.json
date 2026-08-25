@@ -4,6 +4,22 @@
     "54123397": {
       "delay": 0,
       "cancelled": true
+    },
+    "54123714": {
+      "delay": 25,
+      "cancelled": false
+    },
+    "54123705": {
+      "delay": 112,
+      "cancelled": false
+    },
+    "54123722": {
+      "delay": 26,
+      "cancelled": false
+    },
+    "54122851": {
+      "delay": 26,
+      "cancelled": false
     }
   },
   "trains": {},
