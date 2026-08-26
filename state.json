@@ -1,6 +1,11 @@
 {
   "date": "2026-08-26",
-  "flights": {},
+  "flights": {
+    "54124275": {
+      "delay": 34,
+      "cancelled": false
+    }
+  },
   "trains": {},
   "events": {},
   "sent_advance": {}
