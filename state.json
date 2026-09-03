@@ -1,6 +1,35 @@
 {
-  "date": "2026-09-02",
-  "flights": {},
+  "date": "2026-09-03",
+  "flights": {
+    "54131072": {
+      "delay": 90,
+      "cancelled": false
+    },
+    "54131077": {
+      "delay": 108,
+      "cancelled": false
+    },
+    "54130819": {
+      "delay": 71,
+      "cancelled": false
+    },
+    "54131087": {
+      "delay": 43,
+      "cancelled": false
+    },
+    "54130778": {
+      "delay": 60,
+      "cancelled": false
+    },
+    "54130780": {
+      "delay": 26,
+      "cancelled": false
+    },
+    "54131084": {
+      "delay": 30,
+      "cancelled": false
+    }
+  },
   "trains": {},
   "events": {},
   "sent_advance": {}
