@@ -1,32 +1,24 @@
 {
-  "date": "2026-09-03",
+  "date": "2026-09-04",
   "flights": {
-    "54131072": {
-      "delay": 90,
+    "54131883": {
+      "delay": 75,
       "cancelled": false
     },
-    "54131077": {
-      "delay": 108,
+    "54131882": {
+      "delay": 96,
       "cancelled": false
     },
-    "54130819": {
-      "delay": 71,
+    "54131880": {
+      "delay": 116,
       "cancelled": false
     },
-    "54131087": {
+    "54131589": {
       "delay": 43,
       "cancelled": false
     },
-    "54130778": {
-      "delay": 60,
-      "cancelled": false
-    },
-    "54130780": {
-      "delay": 26,
-      "cancelled": false
-    },
-    "54131084": {
-      "delay": 30,
+    "54131897": {
+      "delay": 53,
       "cancelled": false
     }
   },
