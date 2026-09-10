@@ -1,20 +1,16 @@
 {
-  "date": "2026-09-09",
+  "date": "2026-09-10",
   "flights": {
-    "54135883": {
-      "delay": 40,
+    "54136687": {
+      "delay": 45,
       "cancelled": false
     },
-    "54135584": {
+    "54136683": {
+      "delay": 95,
+      "cancelled": false
+    },
+    "54136695": {
       "delay": 25,
-      "cancelled": false
-    },
-    "54135582": {
-      "delay": 24,
-      "cancelled": false
-    },
-    "54135580": {
-      "delay": 30,
       "cancelled": false
     }
   },
