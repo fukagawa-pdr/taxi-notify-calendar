@@ -7,7 +7,7 @@ GitHubの定期実行(cron)は起動が数十分ずれることがあるため�
 
 環境変数:
   POLL_SECONDS … 何秒おきに見るか（既定 120）
-  LOOP_END     … 何時まで見張るか JST "HH:MM"（既定 00:00＝24時で終了）
+  LOOP_END     … 何時まで見張るか JST "HH:MM"（既定 01:30＝終電帯まで見る）
   MAX_MINUTES  … 保険の上限（既定 300分。GitHubのジョブ上限6時間より短く）
 """
 import os, sys, time, pathlib
@@ -19,7 +19,7 @@ import run as runner
 
 JST = timezone(timedelta(hours=9))
 POLL = int(os.environ.get("POLL_SECONDS", "120"))
-LOOP_END = os.environ.get("LOOP_END", "00:00").strip() or "00:00"
+LOOP_END = os.environ.get("LOOP_END", "01:30").strip() or "01:30"
 MAX_MINUTES = int(os.environ.get("MAX_MINUTES", "300"))
 
 def log(m):
@@ -37,7 +37,7 @@ def main():
     now = datetime.now(JST)
     if now.hour not in runner.ACTIVE_HOURS:
         # 起動が大きく遅れて時間外に始まった場合は、誤った時刻に鳴らさず即終了する
-        log(f"稼働時間外のため何もせず終了（{now:%H:%M} / 稼働は16:00〜23:59）")
+        log(f"稼働時間外のため何もせず終了（{now:%H:%M} / 稼働は16:00〜翌1:59）")
         return
     end = end_time(now)
     log(f"監視開始（{POLL}秒おき / {end:%m-%d %H:%M} まで）")
@@ -47,7 +47,7 @@ def main():
         if now >= end:
             break
         if now.hour not in runner.ACTIVE_HOURS:
-            log("24時になったので監視を終了します")
+            log("稼働時間を過ぎたので監視を終了します")
             break
         n += 1
         try:

@@ -23,7 +23,10 @@ JST = timezone(timedelta(hours=9))
 STATE = ROOT / "state.json"
 EVENTS = ROOT / "events.json"
 
-ACTIVE_HOURS = set(range(16, 24))   # JST 16:00〜23:59。0時台・1時台は送らない
+ACTIVE_HOURS = set(range(16, 24)) | {0, 1, 2, 3, 4}   # JST 16:00〜翌04:59。
+# ⚠️ 深夜帯を含めるのが重要。終電（地下鉄0:12〜0:19）が乱れるのは旧設定(24時終了)の
+#    直後で構造的に検知できなかった。本人は朝5時退勤なので4時台までを対象にする
+#    （早朝の空港送り＝快速エアポート始発5:50より前の客を拾うため）。
 EVENT_REMIND_MIN = 90               # 当日リマインド：開始の何分前か
 ADVANCE_DAYS = 7                    # 事前予告：何日前に出すか
 ADVANCE_HOUR = 20                   # 事前予告を出す時刻（JST）
@@ -75,15 +78,19 @@ def is_advance_target(ev):
 def run(dry=False, force=False):
     now = datetime.now(JST)
     if not force and now.hour not in ACTIVE_HOURS:
-        print(f"[skip] {now:%H:%M} は稼働時間外（16時〜23時台のみ・24時以降は送らない）")
+        print(f"[skip] {now:%H:%M} は稼働時間外（16時〜翌4時台のみ）")
         return
     today = now.strftime("%Y-%m-%d")
+    # 夜勤は日付をまたぐ。午前6時を境に「同じ勤務日」とみなすことで、
+    # 0時を過ぎた瞬間に重複防止の記録が消えて再通知される事故を防ぐ。
+    # 空港便も、前日23:50発の便が0:30に着くケースを拾えるようになる。
+    shift_day = (now - timedelta(hours=6)).strftime("%Y-%m-%d")
 
     st = load_state()
     # 日次でリセットするのは遅延の記録だけ。事前予告の送信済みフラグは持ち越す
     sent_advance = st.get("sent_advance", {})
-    if st.get("date") != today:
-        st = {"date": today, "flights": {}, "trains": {}, "events": {}}
+    if st.get("date") != shift_day:
+        st = {"date": shift_day, "flights": {}, "trains": {}, "events": {}}
     st.setdefault("flights", {})
     st.setdefault("trains", {})
     st.setdefault("events", {})
@@ -92,7 +99,7 @@ def run(dry=False, force=False):
     msgs = []
 
     # ② 千歳 到着遅延 -----------------------------------------------------
-    for a in flight_check.check(today=today):
+    for a in flight_check.check(today=shift_day):
         prev = st["flights"].get(a["id"])
         cancelled = "欠航" in a["status"]
         if not isinstance(prev, dict):
@@ -108,19 +115,14 @@ def run(dry=False, force=False):
             msgs.append(flight_check.format_msg(a))
         st["flights"][a["id"]] = {"delay": a["delay"], "cancelled": cancelled}
 
-    # ③ 列車遅延 ---------------------------------------------------------
+    # ③ 列車の遅延・運休（JR北海道の列車単位データ＋札幌市営地下鉄）--------
+    # 旧実装はYahoo!運行情報を見ていたが、Yahoo!は仕様上「終電の遅延」を配信しない。
+    # そのため一度も鳴らなかった。JR北海道の一次データに切り替えて列車単位で拾う。
     for a in train_check.check():
-        prev = st["trains"].get(a["line"])
-        stopped = ("見合" in a["status"]) or ("運休" in a["status"])
-        if not isinstance(prev, dict):
-            prev = None
-        if prev is None:
-            send = True
-        else:
-            send = stopped and not prev.get("stopped")     # 遅延→運転見合わせ の悪化のみ再送
-        if send:
-            msgs.append(train_check.format_msg(a))
-        st["trains"][a["line"]] = {"status": a["status"], "stopped": stopped}
+        if a["id"] in st["trains"]:
+            continue                                      # 同じ列車の同じ状況は1回だけ
+        st["trains"][a["id"]] = True
+        msgs.append(train_check.format_msg(a))
 
     # ① イベント ---------------------------------------------------------
     def hm(s):

@@ -5,14 +5,17 @@ name: taxi-watch
 # 起動が多少遅れても、動き出した後の検知は2分以内で安定する。
 #
 # 前半 = UTC 07:00 (JST 16:00) 起動、JST 20:10 まで監視
-# 後半 = UTC 11:00 (JST 20:00) 起動、JST 24:00 まで監視
+# 後半 = UTC 11:00 (JST 20:00) 起動、JST 翌1:30 まで監視（終電帯を必ず含める）
 # 予備 = UTC 13:00 (JST 22:00) 起動。前半/後半が動かなかった時の保険
-#        （すでに動いていれば concurrency で待たされ、24時以降は自動で即終了する）
+# 深夜 = UTC 16:00 (JST 01:00) 起動、JST 05:00 まで監視
+#        本人は朝5時退勤。早朝の空港送り（快速エアポート始発5:50より前）を拾うため。
+#        GitHubの1ジョブ6時間上限に収めるため、夜を2本に分けている。
 on:
   schedule:
     - cron: "0 7 * * *"
     - cron: "0 11 * * *"
     - cron: "0 13 * * *"
+    - cron: "0 16 * * *"
   workflow_dispatch:
     inputs:
       minutes:
@@ -32,7 +35,7 @@ concurrency:
 jobs:
   watch:
     runs-on: ubuntu-latest
-    timeout-minutes: 300
+    timeout-minutes: 380   # 20:00起動→翌1:30まで(330分)を収めるため
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v5
@@ -51,9 +54,9 @@ jobs:
           LINE_CHANNEL_TOKEN: ${{ secrets.LINE_CHANNEL_TOKEN }}
           EVENTS_PRIVATE: ${{ secrets.EVENTS_PRIVATE }}
           POLL_SECONDS: "120"
-          # 前半の起動(UTC 07:00)は20:10まで。それ以外は24時まで。
-          LOOP_END: ${{ github.event.schedule == '0 7 * * *' && '20:10' || '00:00' }}
-          MAX_MINUTES: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.minutes || '10') || '290' }}
+          # 前半(UTC07)は20:10まで／深夜(UTC16)は05:00まで／それ以外は翌1:30まで。
+          LOOP_END: ${{ github.event.schedule == '0 7 * * *' && '20:10' || (github.event.schedule == '0 16 * * *' && '05:00' || '01:30') }}
+          MAX_MINUTES: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.minutes || '10') || '350' }}
         run: python watch_loop.py
 
       - name: 重複防止の記録を保存
