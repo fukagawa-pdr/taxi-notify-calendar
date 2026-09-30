@@ -1,15 +1,6 @@
 {
-  "date": "2026-09-29",
-  "flights": {
-    "54151692": {
-      "delay": 53,
-      "cancelled": false
-    },
-    "54151995": {
-      "delay": 38,
-      "cancelled": false
-    }
-  },
+  "date": "2026-09-30",
+  "flights": {},
   "trains": {},
   "events": {},
   "sent_advance": {}
