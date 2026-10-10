@@ -6,13 +6,11 @@ name: mac-watch
 #   （停電・Wi-Fi切れ・スリープ・Mac停止など。GitHub の cron は遅れることがあるので、
 #    「同じ途絶えには1回だけ」を watch-state ブランチに記録して重複送信を防ぐ）
 # - 途絶えが6時間を超えたら、もう一度だけ念押しを送る
-# - Mac 側から alert ブランチへ push されたら、そのコミットメッセージを LINE で送る
-#   （Claudeアプリが止まっている／復旧した、など）
+# - Mac 側が alert ブランチへ push した知らせ（Claudeアプリ停止／復旧など）も、15分ごとの確認で LINE に送る
+#   （alert ブランチの中身は空なので push トリガーは使えない＝workflow ファイルが無いため）
 on:
   schedule:
     - cron: "*/15 * * * *"
-  push:
-    branches: [alert]
   workflow_dispatch:
     inputs:
       test:
@@ -47,41 +45,45 @@ jobs:
           print(urllib.request.urlopen(req, timeout=20).status)
           EOF
 
-      - name: Mac からの知らせ（alert ブランチへの push）
-        if: github.event_name == 'push'
-        env:
-          LINE_CHANNEL_TOKEN: ${{ secrets.LINE_CHANNEL_TOKEN }}
-        run: git log -1 --format=%B | python3 /tmp/send.py
-
       - name: テスト送信
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.test == 'yes'
         env:
           LINE_CHANNEL_TOKEN: ${{ secrets.LINE_CHANNEL_TOKEN }}
         run: echo "【Mac見張り】テスト通知です。Macとの接続が切れたら、ここに届きます。" | python3 /tmp/send.py
 
-      - name: 途絶えの確認
-        if: github.event_name == 'schedule'
+      - name: 途絶えと知らせの確認
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         env:
           LINE_CHANNEL_TOKEN: ${{ secrets.LINE_CHANNEL_TOKEN }}
         run: |
-          git fetch -q origin heartbeat watch-state || true
-          hb=$(git log -1 --format=%ct origin/heartbeat 2>/dev/null || echo 0)
-          [ "$hb" = "0" ] && { echo "heartbeat なし"; exit 0; }
-          now=$(date +%s); age=$(( (now - hb) / 60 ))
-          last=$(TZ=Asia/Tokyo date -d @"$hb" '+%-m/%-d %H:%M')
-          state=$(git show origin/watch-state:state.txt 2>/dev/null || echo "alerted=0 reminded=0")
-          alerted=$(echo "$state" | sed -n 's/.*alerted=\([0-9]*\).*/\1/p'); reminded=$(echo "$state" | sed -n 's/.*reminded=\([0-9]*\).*/\1/p')
-          echo "last=$last age=${age}min state=$state"
-          msg=""
-          if [ "$age" -ge 360 ] && [ "$reminded" != "$hb" ]; then
-            msg="【Mac見張り】まだMacから応答がありません（最後の応答 ${last}・約$((age/60))時間前）。電源・Wi-Fi・ふたが閉じていないかを見てください。"
-            reminded=$hb; alerted=$hb
-          elif [ "$age" -ge 45 ] && [ "$alerted" != "$hb" ]; then
-            msg="【Mac見張り】自宅Macからの応答が${age}分途絶えています（最後の応答 ${last}）。携帯からClaudeに指示が届かない可能性があります。停電・Wi-Fi・スリープ・ふた閉じを確認してください。"
-            alerted=$hb
+          git fetch -q origin heartbeat watch-state alert || true
+          state=$(git show origin/watch-state:state.txt 2>/dev/null || echo "")
+          get(){ echo "$state" | tr ' ' '\n' | sed -n "s/^$1=//p"; }
+          alerted=$(get alerted); reminded=$(get reminded); asent=$(get alert_sent)
+          changed=0
+          # Mac からの知らせ（alert ブランチ）。初回は送らずに基準だけ記録する
+          ash=$(git rev-parse -q --verify origin/alert 2>/dev/null || echo none)
+          if [ "$ash" != "none" ] && [ "$ash" != "$asent" ]; then
+            if [ -n "$asent" ]; then git log -1 --format=%B "$ash" | python3 /tmp/send.py; fi
+            asent=$ash; changed=1
           fi
-          [ -z "$msg" ] && exit 0
-          echo "$msg" | python3 /tmp/send.py
+          # heartbeat の途絶え
+          hb=$(git log -1 --format=%ct origin/heartbeat 2>/dev/null || echo 0)
+          if [ "$hb" != "0" ]; then
+            now=$(date +%s); age=$(( (now - hb) / 60 ))
+            last=$(TZ=Asia/Tokyo date -d @"$hb" '+%-m/%-d %H:%M')
+            echo "last=$last age=${age}min"
+            msg=""
+            if [ "$age" -ge 360 ] && [ "$reminded" != "$hb" ]; then
+              msg="【Mac見張り】まだMacから応答がありません（最後の応答 ${last}・約$((age/60))時間前）。電源・Wi-Fi・ふたが閉じていないかを見てください。"
+              reminded=$hb; alerted=$hb
+            elif [ "$age" -ge 45 ] && [ "$alerted" != "$hb" ]; then
+              msg="【Mac見張り】自宅Macからの応答が${age}分途絶えています（最後の応答 ${last}）。携帯からClaudeに指示が届かない可能性があります。停電・Wi-Fi・スリープ・ふた閉じを確認してください。"
+              alerted=$hb
+            fi
+            if [ -n "$msg" ]; then echo "$msg" | python3 /tmp/send.py; changed=1; fi
+          fi
+          [ "$changed" = 0 ] && exit 0
           git config user.name "mac-watch"; git config user.email "mac-watch@users.noreply.github.com"
-          git checkout -q --orphan ws && git rm -rq --cached . && echo "alerted=$alerted reminded=$reminded" > state.txt
+          git checkout -q --orphan ws && git rm -rq --cached . && echo "alerted=$alerted reminded=$reminded alert_sent=$asent" > state.txt
           git add state.txt && git commit -qm "watch-state" && git push -qf origin HEAD:watch-state
