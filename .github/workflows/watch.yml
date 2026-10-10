@@ -10,7 +10,12 @@ name: taxi-watch
 # 深夜 = UTC 16:00 (JST 01:00) 起動、JST 05:00 まで監視
 #        本人は朝5時退勤。早朝の空港送り（快速エアポート始発5:50より前）を拾うため。
 #        GitHubの1ジョブ6時間上限に収めるため、夜を2本に分けている。
+# 2026-10-11 追記：GitHub の cron は実測で数時間遅れていた（16:00予定→22:53起動など）。
+# 自宅Mac（24時間稼働）が launchd で 15:55 / 21:44 / 03:33 に kick ブランチへ push し、即時に起動させる。
+# cron は Mac が止まっている時の予備として残す（同時実行は concurrency で1本に絞られる）。
 on:
+  push:
+    branches: [kick]
   schedule:
     - cron: "0 7 * * *"
     - cron: "0 11 * * *"
@@ -38,6 +43,8 @@ jobs:
     timeout-minutes: 380   # 20:00起動→翌1:30まで(330分)を収めるため
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: main          # kick から起動しても、記録（state.json）は main を読み書きする
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -55,7 +62,7 @@ jobs:
           EVENTS_PRIVATE: ${{ secrets.EVENTS_PRIVATE }}
           POLL_SECONDS: "120"
           # 前半(UTC07)は20:10まで／深夜(UTC16)は05:00まで／それ以外は翌1:30まで。
-          LOOP_END: ${{ github.event.schedule == '0 7 * * *' && '20:10' || (github.event.schedule == '0 16 * * *' && '05:00' || '01:30') }}
+          LOOP_END: ${{ github.event_name == 'push' && '05:00' || (github.event.schedule == '0 7 * * *' && '20:10' || (github.event.schedule == '0 16 * * *' && '05:00' || '01:30')) }}
           MAX_MINUTES: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.minutes || '10') || '350' }}
         run: python watch_loop.py
 
