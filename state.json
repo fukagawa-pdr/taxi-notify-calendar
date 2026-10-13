@@ -1,12 +1,9 @@
 {
-  "date": "2026-10-12",
-  "flights": {
-    "54162033": {
-      "delay": 36,
-      "cancelled": false
-    }
+  "date": "2026-10-13",
+  "flights": {},
+  "trains": {
+    "jr:03:運休:普通列車:札幌:23:34": true
   },
-  "trains": {},
   "events": {},
   "sent_advance": {}
 }
