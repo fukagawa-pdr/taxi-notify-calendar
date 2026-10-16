@@ -18,6 +18,7 @@ ROOT = pathlib.Path(__file__).parent
 sys.path.insert(0, str(ROOT))
 from checkers import flight_check, train_check
 import notify
+import briefing
 
 JST = timezone(timedelta(hours=9))
 STATE = ROOT / "state.json"
@@ -30,6 +31,7 @@ ACTIVE_HOURS = set(range(16, 24)) | {0, 1, 2, 3, 4}   # JST 16:00〜翌04:59。
 EVENT_REMIND_MIN = 90               # 当日リマインド：開始の何分前か
 ADVANCE_DAYS = 7                    # 事前予告：何日前に出すか
 ADVANCE_HOUR = 20                   # 事前予告を出す時刻（JST）
+BRIEF_FROM, BRIEF_UNTIL = "16:30", "22:00"  # 今夜の狙い目を送る時間帯（JST）
 ESCALATE_MIN = 30                   # 遅れがこれ以上さらに拡大したら再通知
 # 事前予告の対象。category 未指定でもタイトルにこの語が入っていれば対象にする
 ADVANCE_KEYWORDS = ("ライブ", "LIVE", "コンサート", "野球", "ファイターズ", "花火",
@@ -171,6 +173,14 @@ def run(dry=False, force=False):
             note = f"\n{ev['note']}" if ev.get("note") else ""
             msgs.append(f"📅 イベント: {ev['title']}\n{venue}{ev['start']}〜{note}\n"
                         f"🚕 タクシー需要に備えを")
+
+    # ④ 今夜の狙い目（夕方に1回だけ。遅れて起動した日も22時までは出す）--------
+    if BRIEF_FROM <= now.strftime("%H:%M") < BRIEF_UNTIL and not st.get("briefing"):
+        try:
+            msgs.insert(0, briefing.build(now, load_events()))
+            st["briefing"] = True
+        except Exception as e:
+            print(f"[warn] 狙い目の作成に失敗: {e}", file=sys.stderr)
 
     # 送信 ---------------------------------------------------------------
     if msgs:
