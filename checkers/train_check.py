@@ -134,18 +134,93 @@ def check(debug=False, late_only=True):
     alerts = check_jr(debug=debug) + check_subway(debug=debug)
     if late_only:
         alerts = [a for a in alerts if a.get("late") or a["src"] == "subway"]
+        # 行く駅が出せない（札幌から遠い所だけの）乱れは通知しない。一晩4通の枠を無駄にしないため
+        alerts = [a for a in alerts if a["src"] == "subway" or where_to_go(a)[0]]
     return alerts
+
+
+# ---- 「どの駅へ行けばいいか」を出すための駅の位置関係（2026-10-17 本人の要望） ----
+# 札幌駅から見てどちら側にあるか。W=小樽方面 / E=岩見沢・千歳方面 / N=学園都市線
+# 側が違う2駅を結ぶ列車は札幌駅を通る＝札幌駅で待っている客がいる。
+_SIDE = {}
+for _side, _names in {
+    "W": "桑園 琴似 発寒中央 発寒 稲積公園 手稲 稲穂 星置 ほしみ 銭函 朝里 小樽築港 南小樽 小樽 塩谷 蘭島 余市 仁木 然別 銀山 小沢 倶知安",
+    "E": "苗穂 白石 厚別 森林公園 大麻 野幌 高砂 江別 豊幌 幌向 上幌向 岩見沢 峰延 光珠内 美唄 茶志内 奈井江 豊沼 砂川 滝川 深川 旭川 "
+         "平和 新札幌 上野幌 北広島 島松 恵み野 恵庭 サッポロビール庭園 長都 千歳 南千歳 新千歳空港 植苗 沼ノ端 苫小牧 登別 東室蘭 室蘭 帯広 釧路 函館",
+    "N": "八軒 新川 新琴似 太平 百合が原 篠路 拓北 あいの里教育大 あいの里公園 ロイズタウン 太美 石狩当別 北海道医療大学",
+}.items():
+    for _n in _names.split():
+        _SIDE[_n] = _side
+
+# 札幌から車で行ける範囲（ここに無い駅で止まった客は遠すぎて狙えない）
+_NEAR = set("札幌 桑園 琴似 発寒中央 発寒 稲積公園 手稲 稲穂 星置 ほしみ 銭函 苗穂 白石 厚別 森林公園 大麻 野幌 高砂 江別 "
+            "平和 新札幌 上野幌 北広島 八軒 新川 新琴似 太平 百合が原 篠路 拓北 あいの里教育大 あいの里公園".split())
+
+# 札幌駅からのおおよその道のり（km）。10km以上が遠距離、40km以上が超遠距離
+_KM = {"手稲": 12, "稲穂": 14, "星置": 16, "ほしみ": 17, "銭函": 22, "小樽築港": 33, "南小樽": 35, "小樽": 37, "余市": 58,
+       "新札幌": 10, "上野幌": 14, "北広島": 20, "島松": 25, "恵み野": 28, "恵庭": 30, "長都": 35, "千歳": 38, "南千歳": 42,
+       "新千歳空港": 45, "苫小牧": 60, "野幌": 17, "高砂": 19, "江別": 21, "幌向": 32, "岩見沢": 43,
+       "あいの里教育大": 15, "あいの里公園": 16, "太美": 22, "石狩当別": 25, "北海道医療大学": 28}
+
+# 地下鉄が乱れた時に客が溢れる乗換駅
+_SUBWAY_HUBS = {"南北線": "さっぽろ・大通・すすきの", "東西線": "大通・バスセンター前・新さっぽろ",
+                "東豊線": "さっぽろ・大通・福住"}
+
+
+def _side(eki):
+    return "S" if eki in ("札幌", "さっぽろ") else _SIDE.get(eki)
+
+
+def _dest(eki, frm="札幌"):
+    """行き先と、乗せる駅からのおおよその距離。同じ側の駅どうしは札幌からの距離の差で近似"""
+    to_km = _KM.get(eki)
+    if to_km is None:
+        return f"{eki}方面"
+    if _side(frm) == "S":
+        km = to_km
+    elif frm in _KM and _side(frm) == _side(eki):
+        km = abs(to_km - _KM[frm])
+    else:
+        return f"{eki}方面"
+    tag = "超遠距離" if km >= 40 else ("遠距離" if km >= 10 else "近距離")
+    return f"{eki}方面（{frm}駅から約{km}km・{tag}）"
+
+
+def where_to_go(a):
+    """(行く駅, 客の行き先) を返す。狙えない時は (None, 理由)"""
+    ha, to, st = a.get("ha_eki", ""), a.get("to_eki", ""), a.get("status", "")
+    # 部分運休「(東室蘭～長万部 間)」→ 手前の駅で降ろされた客が残る
+    m = re.search(r"[（(]\s*(\S+?)\s*[～~〜]\s*(\S+?)\s*間", st)
+    if m and "運休" in st:
+        stop = m.group(1)
+        if stop in _NEAR or _side(stop) == "S":
+            return (f"{stop}駅", _dest(to, stop))
+        return (None, f"{stop}駅で運転打ち切り（札幌からは遠い）")
+    sh, so = _side(ha), _side(to)
+    # 札幌発 or 札幌をまたぐ列車 → 札幌駅で待っている客が諦めてタクシーへ
+    if sh == "S" or (sh and so and sh != so):
+        return ("札幌駅", _dest(to, "札幌"))
+    # 札幌を通らない列車 → 発車駅が近ければそこ
+    if ha in _NEAR:
+        return (f"{ha}駅", _dest(to, ha))
+    return (None, "札幌を通らない列車（札幌からは遠い）")
 
 
 def format_msg(a):
     if a["src"] == "subway":
-        return (f"🚇 {a['line']}：{a['status']}\n"
-                f"🚕 駅周辺でタクシー需要↑")
+        line = a["line"].replace("地下鉄", "")
+        hub = next((v for k, v in _SUBWAY_HUBS.items() if k in line), None)
+        go = f"\n📍行く駅：{hub}" if hub else ""
+        return f"🚇 {a['line']}：{a['status']}{go}\n🚕 地下鉄を諦めた客がタクシーへ"
     mark = "🌙 終電帯" if a.get("late") else "🚆"
     区間 = ""
     if a.get("ha_eki"):
         区間 = f"\n{a['ha_eki']} {a['ha_time']} → {a.get('to_eki','')} {a.get('to_time','')}".rstrip()
-    tail = "\n🚕 駅に人が滞留 → 今すぐ駅へ" if a.get("late") else "\n🚕 タクシー需要↑の可能性"
+    go, dest = where_to_go(a)
+    if go:
+        tail = f"\n📍行く駅：{go}\n👤客の行き先：{dest}"
+    else:
+        tail = f"\n（{dest}。様子見でOK）"
     return f"{mark} [{a['line']}] {a['train']} {a['kind']}{区間}\n{a['status']}{tail}"
 
 
