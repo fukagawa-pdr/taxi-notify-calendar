@@ -1,10 +1,16 @@
 {
-  "date": "2026-10-16",
+  "date": "2026-10-17",
   "flights": {},
-  "trains": {
-    "jr:03:遅延:普通列車:岩見沢:23:05": true,
-    "jr:02:遅延:特別快速エアポート１９５号:新千歳空港:23:21": true
+  "trains": {},
+  "events": {
+    "20261017-bump": true
   },
-  "events": {},
-  "sent_advance": {}
+  "sent_advance": {
+    "20261018-bump": true,
+    "20261023-mga": true,
+    "20261024-mga": true,
+    "20261024-numberi": true,
+    "20261024-mazzel": true
+  },
+  "briefing": true
 }
