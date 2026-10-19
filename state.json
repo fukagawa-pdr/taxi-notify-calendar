@@ -1,10 +1,13 @@
 {
-  "date": "2026-10-18",
-  "flights": {},
-  "trains": {},
-  "events": {
-    "20261018-bump": true
+  "date": "2026-10-19",
+  "flights": {
+    "54167816": {
+      "delay": 31,
+      "cancelled": false
+    }
   },
+  "trains": {},
+  "events": {},
   "sent_advance": {
     "20261018-bump": true,
     "20261023-mga": true,
