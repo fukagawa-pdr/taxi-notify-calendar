@@ -1,20 +1,16 @@
 {
-  "date": "2026-10-20",
+  "date": "2026-10-21",
   "flights": {
-    "54168560": {
-      "delay": 144,
-      "cancelled": false
-    },
-    "54168332": {
+    "54169366": {
       "delay": 25,
       "cancelled": false
     },
-    "54168291": {
-      "delay": 53,
+    "54169112": {
+      "delay": 21,
       "cancelled": false
     },
-    "54168593": {
-      "delay": 59,
+    "54169073": {
+      "delay": 42,
       "cancelled": false
     }
   },
@@ -25,7 +21,8 @@
     "20261023-mga": true,
     "20261024-mga": true,
     "20261024-numberi": true,
-    "20261024-mazzel": true
+    "20261024-mazzel": true,
+    "20261028-natori": true
   },
   "briefing": true
 }
