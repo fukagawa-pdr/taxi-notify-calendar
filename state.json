@@ -1,26 +1,7 @@
 {
-  "date": "2026-10-21",
-  "flights": {
-    "54169366": {
-      "delay": 30,
-      "cancelled": false
-    },
-    "54169112": {
-      "delay": 21,
-      "cancelled": false
-    },
-    "54169073": {
-      "delay": 46,
-      "cancelled": false
-    },
-    "54169069": {
-      "delay": 37,
-      "cancelled": false
-    }
-  },
-  "trains": {
-    "jr:03:遅延:普通列車:岩見沢:23:05": true
-  },
+  "date": "2026-10-22",
+  "flights": {},
+  "trains": {},
   "events": {},
   "sent_advance": {
     "20261018-bump": true,
