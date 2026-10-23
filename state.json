@@ -9,7 +9,8 @@
   "trains": {},
   "events": {
     "20261023-neurosurg-last": true,
-    "20261023-mga": true
+    "20261023-mga": true,
+    "20261024-neurosurg-morning": true
   },
   "sent_advance": {
     "20261018-bump": true,
