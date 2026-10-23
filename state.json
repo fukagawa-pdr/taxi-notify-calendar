@@ -1,15 +1,24 @@
 {
-  "date": "2026-10-22",
-  "flights": {},
+  "date": "2026-10-23",
+  "flights": {
+    "54170651": {
+      "delay": 36,
+      "cancelled": false
+    }
+  },
   "trains": {},
-  "events": {},
+  "events": {
+    "20261023-neurosurg-last": true,
+    "20261023-mga": true
+  },
   "sent_advance": {
     "20261018-bump": true,
     "20261023-mga": true,
     "20261024-mga": true,
     "20261024-numberi": true,
     "20261024-mazzel": true,
-    "20261028-natori": true
+    "20261028-natori": true,
+    "20261030-snowman": true
   },
   "briefing": true
 }
