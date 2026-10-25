@@ -1,17 +1,13 @@
 {
-  "date": "2026-10-24",
+  "date": "2026-10-25",
   "flights": {
-    "54170567": {
-      "delay": 23,
+    "54172529": {
+      "delay": 51,
       "cancelled": false
     }
   },
   "trains": {},
-  "events": {
-    "20261024-mga": true,
-    "20261024-numberi": true,
-    "20261024-mazzel": true
-  },
+  "events": {},
   "sent_advance": {
     "20261018-bump": true,
     "20261023-mga": true,
@@ -21,7 +17,8 @@
     "20261028-natori": true,
     "20261030-snowman": true,
     "20261031-macaroni": true,
-    "20261031-snowman": true
+    "20261031-snowman": true,
+    "20261101-snowman": true
   },
   "briefing": true
 }
