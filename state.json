@@ -1,19 +1,13 @@
 {
-  "date": "2026-10-28",
+  "date": "2026-10-29",
   "flights": {
-    "54174600": {
-      "delay": 35,
+    "54175408": {
+      "delay": 21,
       "cancelled": false
     }
   },
-  "trains": {
-    "jr:03:遅延:普通列車:小樽:23:08": true,
-    "jr:04:遅延:普通列車:札幌:23:59": true,
-    "jr:02:遅延:特別快速エアポート１９５号:新千歳空港:23:21": true
-  },
-  "events": {
-    "20261028-natori": true
-  },
+  "trains": {},
+  "events": {},
   "sent_advance": {
     "20261018-bump": true,
     "20261023-mga": true,
