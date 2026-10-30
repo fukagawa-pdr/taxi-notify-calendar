@@ -1,13 +1,19 @@
 {
-  "date": "2026-10-29",
+  "date": "2026-10-30",
   "flights": {
-    "54175408": {
-      "delay": 27,
+    "54176822": {
+      "delay": 21,
+      "cancelled": false
+    },
+    "54176217": {
+      "delay": 25,
       "cancelled": false
     }
   },
   "trains": {},
-  "events": {},
+  "events": {
+    "20261030-snowman": true
+  },
   "sent_advance": {
     "20261018-bump": true,
     "20261023-mga": true,
