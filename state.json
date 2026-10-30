@@ -2,11 +2,15 @@
   "date": "2026-10-30",
   "flights": {
     "54176822": {
-      "delay": 21,
+      "delay": 26,
       "cancelled": false
     },
     "54176217": {
-      "delay": 25,
+      "delay": 32,
+      "cancelled": false
+    },
+    "54176523": {
+      "delay": 27,
       "cancelled": false
     }
   },
