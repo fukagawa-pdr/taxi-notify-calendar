@@ -167,7 +167,9 @@ def event_lines(today, events):
         if e.get("remind_at") and e["remind_at"] != start:
             # ライブ等は始まりより終わりが稼ぎ時。remind_at を終演前後の目安として出す
             t = f"{_clock(e['remind_at'])}〜"
-            txt = f"{e['title']}（{start}開演）の終演前後｜{place}"
+            game = " vs " in e["title"] or "VS" in e["title"]
+            txt = (f"{e['title']}（{start}試合開始）の試合終了前後｜{place}" if game
+                   else f"{e['title']}（{start}開演）の終演前後｜{place}")
         else:
             t, txt = f"{_clock(start)}〜", f"{e['title']}｜{place}"
         out.append((t, txt))
