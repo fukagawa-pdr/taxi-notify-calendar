@@ -1,22 +1,27 @@
 {
-  "date": "2026-10-30",
+  "date": "2026-10-31",
   "flights": {
-    "54176822": {
-      "delay": 26,
+    "54177021": {
+      "delay": 30,
       "cancelled": false
     },
-    "54176217": {
-      "delay": 32,
+    "54177320": {
+      "delay": 97,
       "cancelled": false
     },
-    "54176523": {
+    "54177025": {
+      "delay": 22,
+      "cancelled": false
+    },
+    "54177023": {
       "delay": 27,
       "cancelled": false
     }
   },
   "trains": {},
   "events": {
-    "20261030-snowman": true
+    "20261031-macaroni": true,
+    "20261031-snowman": true
   },
   "sent_advance": {
     "20261018-bump": true,
