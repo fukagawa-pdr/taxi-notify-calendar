@@ -1,27 +1,14 @@
 {
-  "date": "2026-10-31",
+  "date": "2026-11-01",
   "flights": {
-    "54177021": {
+    "54178143": {
       "delay": 35,
-      "cancelled": false
-    },
-    "54177320": {
-      "delay": 100,
-      "cancelled": false
-    },
-    "54177025": {
-      "delay": 22,
-      "cancelled": false
-    },
-    "54177023": {
-      "delay": 27,
       "cancelled": false
     }
   },
   "trains": {},
   "events": {
-    "20261031-macaroni": true,
-    "20261031-snowman": true
+    "20261101-snowman": true
   },
   "sent_advance": {
     "20261018-bump": true,
@@ -33,7 +20,12 @@
     "20261030-snowman": true,
     "20261031-macaroni": true,
     "20261031-snowman": true,
-    "20261101-snowman": true
+    "20261101-snowman": true,
+    "20261102-yakushimaru": true,
+    "20261103-ikimono": true,
+    "20261104-ikuzo": true,
+    "20261107-ayaka": true,
+    "20261108-hanzaki": true
   },
   "briefing": true
 }
