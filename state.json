@@ -1,6 +1,11 @@
 {
   "date": "2026-11-04",
-  "flights": {},
+  "flights": {
+    "54180219": {
+      "delay": 20,
+      "cancelled": false
+    }
+  },
   "trains": {},
   "events": {
     "20261104-ikuzo": true
