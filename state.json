@@ -1,15 +1,8 @@
 {
-  "date": "2026-11-04",
-  "flights": {
-    "54180219": {
-      "delay": 20,
-      "cancelled": false
-    }
-  },
+  "date": "2026-11-05",
+  "flights": {},
   "trains": {},
-  "events": {
-    "20261104-ikuzo": true
-  },
+  "events": {},
   "sent_advance": {
     "20261018-bump": true,
     "20261023-mga": true,
@@ -26,7 +19,8 @@
     "20261104-ikuzo": true,
     "20261107-ayaka": true,
     "20261108-hanzaki": true,
-    "20261110-anri": true
+    "20261110-anri": true,
+    "20261112-fruitszipper": true
   },
   "briefing": true
 }
