@@ -1,8 +1,15 @@
 {
-  "date": "2026-11-05",
-  "flights": {},
+  "date": "2026-11-06",
+  "flights": {
+    "54181110": {
+      "delay": 45,
+      "cancelled": false
+    }
+  },
   "trains": {},
-  "events": {},
+  "events": {
+    "20261106-levanga": true
+  },
   "sent_advance": {
     "20261018-bump": true,
     "20261023-mga": true,
@@ -20,7 +27,8 @@
     "20261107-ayaka": true,
     "20261108-hanzaki": true,
     "20261110-anri": true,
-    "20261112-fruitszipper": true
+    "20261112-fruitszipper": true,
+    "20261113-milet": true
   },
   "briefing": true
 }
