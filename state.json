@@ -1,6 +1,15 @@
 {
   "date": "2026-11-07",
-  "flights": {},
+  "flights": {
+    "54181711": {
+      "delay": 47,
+      "cancelled": false
+    },
+    "54181806": {
+      "delay": 20,
+      "cancelled": false
+    }
+  },
   "trains": {},
   "events": {
     "20261107-ayaka": true
