@@ -1,18 +1,9 @@
 {
-  "date": "2026-11-07",
-  "flights": {
-    "54181711": {
-      "delay": 47,
-      "cancelled": false
-    },
-    "54181806": {
-      "delay": 20,
-      "cancelled": false
-    }
-  },
+  "date": "2026-11-08",
+  "flights": {},
   "trains": {},
   "events": {
-    "20261107-ayaka": true
+    "20261108-hanzaki": true
   },
   "sent_advance": {
     "20261018-bump": true,
@@ -34,7 +25,9 @@
     "20261112-fruitszipper": true,
     "20261113-milet": true,
     "20261114-inaba": true,
-    "20261114-yoasobi": true
+    "20261114-yoasobi": true,
+    "20261115-yoasobi": true,
+    "20261115-lisa": true
   },
   "briefing": true
 }
