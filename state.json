@@ -1,6 +1,11 @@
 {
   "date": "2026-11-08",
-  "flights": {},
+  "flights": {
+    "54182300": {
+      "delay": 30,
+      "cancelled": false
+    }
+  },
   "trains": {},
   "events": {
     "20261108-hanzaki": true
