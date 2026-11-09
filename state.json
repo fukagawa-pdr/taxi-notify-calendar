@@ -1,15 +1,17 @@
 {
-  "date": "2026-11-08",
+  "date": "2026-11-09",
   "flights": {
-    "54182300": {
+    "54183010": {
       "delay": 30,
+      "cancelled": false
+    },
+    "54183070": {
+      "delay": 37,
       "cancelled": false
     }
   },
   "trains": {},
-  "events": {
-    "20261108-hanzaki": true
-  },
+  "events": {},
   "sent_advance": {
     "20261018-bump": true,
     "20261023-mga": true,
