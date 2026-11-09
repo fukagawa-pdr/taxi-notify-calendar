@@ -14,7 +14,11 @@
       "cancelled": false
     }
   },
-  "trains": {},
+  "trains": {
+    "subway:南北線:遅れがあります": true,
+    "subway:東西線:遅れがあります": true,
+    "subway:東豊線:遅れがあります": true
+  },
   "events": {},
   "sent_advance": {
     "20261018-bump": true,
