@@ -1,6 +1,11 @@
 {
   "date": "2026-11-11",
-  "flights": {},
+  "flights": {
+    "54184064": {
+      "delay": 31,
+      "cancelled": false
+    }
+  },
   "trains": {},
   "events": {
     "20261111-levanga": true
