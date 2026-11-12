@@ -1,14 +1,14 @@
 {
-  "date": "2026-11-11",
+  "date": "2026-11-12",
   "flights": {
-    "54184064": {
-      "delay": 31,
+    "54184454": {
+      "delay": 41,
       "cancelled": false
     }
   },
   "trains": {},
   "events": {
-    "20261111-levanga": true
+    "20261112-fruitszipper": true
   },
   "sent_advance": {
     "20261018-bump": true,
