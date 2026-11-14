@@ -1,15 +1,10 @@
 {
-  "date": "2026-11-13",
-  "flights": {
-    "54184970": {
-      "delay": 40,
-      "cancelled": false
-    }
-  },
+  "date": "2026-11-14",
+  "flights": {},
   "trains": {},
   "events": {
-    "20261113-levanga": true,
-    "20261113-milet": true
+    "20261114-inaba": true,
+    "20261114-yoasobi": true
   },
   "sent_advance": {
     "20261018-bump": true,
