@@ -1,6 +1,11 @@
 {
   "date": "2026-11-14",
-  "flights": {},
+  "flights": {
+    "54185831": {
+      "delay": 200,
+      "cancelled": false
+    }
+  },
   "trains": {},
   "events": {
     "20261114-inaba": true,
