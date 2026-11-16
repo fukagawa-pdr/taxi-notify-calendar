@@ -1,23 +1,8 @@
 {
-  "date": "2026-11-15",
-  "flights": {
-    "54186093": {
-      "delay": 39,
-      "cancelled": false
-    },
-    "54186095": {
-      "delay": 60,
-      "cancelled": false
-    }
-  },
+  "date": "2026-11-16",
+  "flights": {},
   "trains": {},
-  "events": {
-    "20261115-jcmi-last": true,
-    "20261115-levanga": true,
-    "20261115-yoasobi": true,
-    "20261115-lisa": true,
-    "20261116-jcmi-morning": true
-  },
+  "events": {},
   "sent_advance": {
     "20261018-bump": true,
     "20261023-mga": true,
@@ -40,7 +25,8 @@
     "20261114-inaba": true,
     "20261114-yoasobi": true,
     "20261115-yoasobi": true,
-    "20261115-lisa": true
+    "20261115-lisa": true,
+    "20261123-kowasare": true
   },
   "briefing": true
 }
