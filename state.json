@@ -2,15 +2,21 @@
   "date": "2026-11-19",
   "flights": {
     "54188345": {
-      "delay": 51,
+      "delay": 57,
       "cancelled": false
     },
     "54188428": {
-      "delay": 49,
+      "delay": 56,
+      "cancelled": false
+    },
+    "54188335": {
+      "delay": 112,
       "cancelled": false
     }
   },
-  "trains": {},
+  "trains": {
+    "jr:03:遅延:普通列車:札幌:23:05": true
+  },
   "events": {},
   "sent_advance": {
     "20261018-bump": true,
