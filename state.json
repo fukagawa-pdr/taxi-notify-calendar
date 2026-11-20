@@ -1,22 +1,40 @@
 {
-  "date": "2026-11-19",
+  "date": "2026-11-20",
   "flights": {
-    "54188345": {
-      "delay": 57,
+    "54188794": {
+      "delay": 159,
       "cancelled": false
     },
-    "54188428": {
-      "delay": 56,
+    "54188847": {
+      "delay": 220,
       "cancelled": false
     },
-    "54188335": {
-      "delay": 112,
+    "54188849": {
+      "delay": 158,
+      "cancelled": false
+    },
+    "54188941": {
+      "delay": 43,
+      "cancelled": false
+    },
+    "54189013": {
+      "delay": 86,
+      "cancelled": false
+    },
+    "54189021": {
+      "delay": 44,
+      "cancelled": false
+    },
+    "54189025": {
+      "delay": 76,
+      "cancelled": false
+    },
+    "54189030": {
+      "delay": 52,
       "cancelled": false
     }
   },
-  "trains": {
-    "jr:03:遅延:普通列車:札幌:23:05": true
-  },
+  "trains": {},
   "events": {},
   "sent_advance": {
     "20261018-bump": true,
@@ -42,6 +60,5 @@
     "20261115-yoasobi": true,
     "20261115-lisa": true,
     "20261123-kowasare": true
-  },
-  "briefing": true
+  }
 }
